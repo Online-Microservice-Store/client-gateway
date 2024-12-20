@@ -2,21 +2,21 @@ import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
-import { PRODUCT_SERVICE } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy
+    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy
   ) {}
 
   @Post()
   async createProduct(@Body() createProductDto: CreateProductDto){
     try {
       const product = await firstValueFrom(
-        this.productsClient.send({cmd: 'create_product'}, createProductDto)
+        this.natsClient.send({cmd: 'create_product'}, createProductDto)
       );
       return product; 
       
@@ -27,14 +27,14 @@ export class ProductsController {
 
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto){
-    return this.productsClient.send({cmd: 'find_all_products'}, paginationDto);
+    return this.natsClient.send({cmd: 'find_all_products'}, paginationDto);
   }
 
   @Get(':id')
   async findOneProduct(@Param('id') id:string){
     try {
       const product = await firstValueFrom(
-        this.productsClient.send({cmd: 'find_one_product'}, {id})
+        this.natsClient.send({cmd: 'find_one_product'}, {id})
       );
 
       return product; 
@@ -49,7 +49,7 @@ export class ProductsController {
   async deleteProduct(@Param('id') id:string){
     try {
       const product = await firstValueFrom(
-        this.productsClient.send({cmd: 'delete_product'}, {id})
+        this.natsClient.send({cmd: 'delete_product'}, {id})
       );
 
       return product; 
@@ -66,7 +66,7 @@ export class ProductsController {
   ){
     try {
       const product = await firstValueFrom(
-        this.productsClient.send({cmd: 'update_product'}, {id, ...updateProductDto})
+        this.natsClient.send({cmd: 'update_product'}, {id, ...updateProductDto})
       );
       return product; 
       
