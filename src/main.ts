@@ -9,7 +9,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
-
+  console.log("First Commit");
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
