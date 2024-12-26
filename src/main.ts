@@ -9,7 +9,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
-  console.log("First Commit");
+  console.log("Quinto Commit");
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -20,6 +20,6 @@ async function bootstrap() {
   app.useGlobalFilters(new RpcCustomExceptionFilter )
   app.listen(envs.port);
 
-  logger.log('Gateway running on port ' + envs.port);
+  logger.log('Gatewayyyyyy running on port ' + envs.port);
 }
 bootstrap();
