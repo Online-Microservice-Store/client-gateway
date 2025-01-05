@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsBoolean, IsNumber, IsOptional, IsPositive, IsString, IsUrl, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsBoolean, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
 import { CreateStockDto } from "./create-stock.dto";
 
 export class CreateProductDto{
@@ -26,15 +26,10 @@ export class CreateProductDto{
     @IsOptional()
     @IsBoolean()
     available: boolean;
-    
-    @IsOptional()
-    @IsString()
-    @IsUrl({}, { message: 'The image field must be a valid URL' })
-    image?: string;
 
     @IsString()
-    catalogId: string
-    
+    catalogId: string;
+
     @IsOptional()
     @IsArray()
     @ArrayMinSize(1)
@@ -42,5 +37,5 @@ export class CreateProductDto{
     @Type( () => CreateStockDto)
     stocks: CreateStockDto[]
 
-    
+
 }

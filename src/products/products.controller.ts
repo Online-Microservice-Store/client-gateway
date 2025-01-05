@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { NATS_SERVICE } from 'src/config';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto } from './dto';
 
 @Controller('products')
 export class ProductsController {
@@ -30,7 +30,7 @@ export class ProductsController {
     return this.natsClient.send({cmd: 'find_all_products'}, paginationDto);
   }
 
-  @Get(':id')
+  @Get('id/:id')
   async findOneProduct(@Param('id') id:string){
     try {
       const product = await firstValueFrom(
@@ -44,6 +44,22 @@ export class ProductsController {
     }
     // return "Esta función regresa el producto" + id;
   }
+
+  @Get('name/:name')
+  async findProductsByName(@Param('name') name:string){
+    try {
+      const products = await firstValueFrom(
+        this.natsClient.send({cmd: 'find_products_by_name'}, {name})
+      );
+
+      return products; 
+      
+    } catch (error) {
+      throw new RpcException(error);
+    }
+    // return "Esta función regresa el producto" + id;
+  }
+  
 
   @Delete(':id')
   async deleteProduct(@Param('id') id:string){
@@ -61,7 +77,7 @@ export class ProductsController {
 
   @Patch(':id')
   async updateProduct(
-    @Param('id', ParseIntPipe) id:number ,
+    @Param('id') id:string,
     @Body() updateProductDto: UpdateProductDto
   ){
     try {

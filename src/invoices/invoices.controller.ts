@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoicePaginationDto } from './dto/invoice-pagination.dto';
 import { UpdateInvoiceDto } from './dto';
+import { PaginationDto } from 'src/common';
 
 @Controller('invoices')
 export class InvoicesController {
@@ -26,10 +27,10 @@ export class InvoicesController {
   
 
   @Get()
-  async findAllInvoice(@Query() invoicePaginationDto: InvoicePaginationDto ){
+  async findAllInvoice(@Query() paginationDto : PaginationDto ){
     try {
       const invoices = await firstValueFrom(
-        this.client.send('find_all_invoices', invoicePaginationDto)
+        this.client.send('find_all_invoices', paginationDto)
       );
       return invoices;
     } catch (error) {

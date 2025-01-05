@@ -8,8 +8,12 @@ async function bootstrap() {
   const logger = new Logger('Main-Gateway');
 
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*', // Cambia esto según tu configuración. Usa '*' para permitir cualquier origen (no recomendado en producción).
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
   app.setGlobalPrefix('api');
-  console.log("Quinto Commit");
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -20,6 +24,6 @@ async function bootstrap() {
   app.useGlobalFilters(new RpcCustomExceptionFilter )
   app.listen(envs.port);
 
-  logger.log('Gatewayyyyyy running on port ' + envs.port);
+  logger.log('Gatewayrunning on port ' + envs.port);
 }
 bootstrap();
