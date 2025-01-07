@@ -1,4 +1,4 @@
-import { IsNumber, IsPositive, IsString } from "class-validator"
+import { IsNumber, IsOptional, IsPositive, IsString } from "class-validator"
 
 export class CreateItemDto {
     @IsString()
@@ -8,12 +8,14 @@ export class CreateItemDto {
     @IsPositive()
     amount: number;
     
+    @IsOptional()
     @IsNumber()
     @IsPositive()
-    individualValue: number;
+    individualValue?: number;
     
+    @IsOptional()
     @IsNumber()
-    totalValue: number;
+    totalValue?: number;
 
     @IsString()
     stockId: string;
