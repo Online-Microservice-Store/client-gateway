@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { NATS_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -6,6 +6,7 @@ import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoicePaginationDto } from './dto/invoice-pagination.dto';
 import { UpdateInvoiceDto } from './dto';
 import { PaginationDto } from 'src/common';
+import { AuthGuardTrader } from 'src/auth/guards/authTrader.guard';
 
 @Controller('invoices')
 export class InvoicesController {
@@ -49,6 +50,49 @@ export class InvoicesController {
       throw new RpcException(error);
     }
   } 
+
+  @Get('/client/:id')
+  async findInvoicesByUserId(
+    @Param('id') id:string,
+    @Query() paginationDto: PaginationDto) {
+    try {
+      const invoices = await firstValueFrom(
+        this.client.send('find_invoices_by_clientId', {id, ...paginationDto})
+      );
+      return invoices;
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
+  @Get('/invoiceStore/:invoiceId')
+  async findInvoicesStoreByUserId(
+    @Param('invoiceId') invoiceId:string,
+    @Query() paginationDto: PaginationDto) {
+    try {
+      const invoicesStore = await firstValueFrom(
+        this.client.send('find_invoicesStore_by_clientId', {invoiceId, ...paginationDto})
+      );
+      return invoicesStore;
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+  @UseGuards(AuthGuardTrader)
+  @Get('/invoiceStore/store/:id')
+  async getInvoicesStoreByUserId(
+    @Param('id') id:string,
+    @Query() paginationDto: PaginationDto) {
+    try {
+      const invoicesStore = await firstValueFrom(
+        this.client.send('find_invoicesStore_by_clientId', {id, ...paginationDto})
+      );
+      return invoicesStore;
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
 
   @Patch(':id')
   async editInvoice(

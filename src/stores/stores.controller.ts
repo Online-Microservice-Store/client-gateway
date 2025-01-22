@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { NATS_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { CreateStoreClientDto, CreateStoreDto, CreateStoreInvoiceDto, CreateStoreTraderDto, UpdateStoreClientDto, UpdateStoreDto } from './dto';
+import { CreateStoreClientDto, CreateStoreDto, CreateStoreTraderDto, UpdateStoreClientDto, UpdateStoreDto } from './dto';
 import { PaginationDto } from 'src/common';
 import { UpdateStoreTraderDto } from './dto/update-store-trader.dto';
-import { UpdateStoreInvoiceDto } from './dto/update-store-invoice.dto';
+import { AuthGuardClient } from 'src/auth/guards/authClient.guard';
+import { AuthGuardTrader } from 'src/auth/guards/authTrader.guard';
 
 @Controller('stores')
 export class StoresController {
@@ -140,6 +141,22 @@ export class StoresController {
     }      
   }
 
+  @UseGuards(AuthGuardTrader)
+  @Get('/storeTrader/trader/:id')
+  async getStoresByTraderId(
+    @Param('id') id : string,
+    @Query() paginationDto: PaginationDto
+  ){
+    try {
+      const stores = await firstValueFrom(
+        this.natsClient.send('get_stores_by_tarderId', {id, ...paginationDto})
+      );
+      return stores; 
+          
+    } catch (error) {
+      throw new RpcException(error);
+    } 
+  }
   // ========================================
   //=============StoreClient=================
   // ========================================
@@ -168,6 +185,19 @@ export class StoresController {
         this.natsClient.send('find_one_store_client', {id})
       );
       return storeClient; 
+      
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
+  @Get('/storeClient/store/:id')
+  async getClientsByStoreId(@Param('id') id:string){
+    try {
+      const clients = await firstValueFrom(
+        this.natsClient.send('get_StoreClient_By_StoreId', {id})
+      );
+      return clients; 
       
     } catch (error) {
       throw new RpcException(error);
@@ -204,67 +234,5 @@ export class StoresController {
     }      
   }
 
-  // ========================================
-  //=============StoreInvoice=================
-  // ========================================
-  @Post('/storeInvoice')
-  async createStoreInvoice(@Body() createStoreInvoiceDto : CreateStoreInvoiceDto){
-    try {
-       const storeInvoice = await firstValueFrom(
-         this.natsClient.send('create_store_invoice', createStoreInvoiceDto)
-       );
-       return storeInvoice; 
-       
-     } catch (error) {
-       throw new RpcException(error);
-     }
-  }
 
-  @Get('/storeInvoice/all')
-  findAllStoreInvoice(@Query() paginationDto: PaginationDto){
-    return this.natsClient.send('find_all_store_invoice', paginationDto);
-  }
-
-  @Get('/storeInvoice/:id')
-  async findOneStoreInvoice(@Param('id') id:string){
-    try {
-      const storeInvoice = await firstValueFrom(
-        this.natsClient.send('find_one_store_invoice', {id})
-      );
-      return storeInvoice; 
-      
-    } catch (error) {
-      throw new RpcException(error);
-    }
-  }
-
-  @Delete('/storeInvoice/:id')
-  async deleteStoreInvoice(@Param('id') id:string){
-    try {
-      const storeInvoice = await firstValueFrom(
-        this.natsClient.send('delete_store_invoice', {id})
-      );
-
-      return storeInvoice; 
-        
-    } catch (error) {
-      throw new RpcException(error);
-    }
-  }
-    
-  @Patch('/storeInvoice/:id')
-  async updateStoreInvoice(
-    @Param('id') id:string,
-    @Body() updateStoreInvoiceDto: UpdateStoreInvoiceDto
-  ){
-    try {
-      const storeInvoice = await firstValueFrom(
-        this.natsClient.send('update_store_invoice', {id, ...updateStoreInvoiceDto})
-      );
-      return storeInvoice; 
-          
-    } catch (error) {
-      throw new RpcException(error);
-    }      
-  }
 }

@@ -19,4 +19,8 @@ export class CreateItemDto {
 
     @IsString()
     stockId: string;
+
+
+    @IsString()
+    invoiceStoreId: string;
 }

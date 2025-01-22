@@ -45,6 +45,24 @@ export class ProductsController {
     // return "Esta función regresa el producto" + id;
   }
 
+  @Get('catalog/:id')
+  async findProductsByCatalogId(
+    @Param('id') id:string,
+    @Query() paginationDto : PaginationDto
+  ){
+    try {
+      const product = await firstValueFrom(
+        this.natsClient.send({cmd: 'find_products_by_catalogId'}, {id, ...paginationDto})
+      );
+
+      return product; 
+      
+    } catch (error) {
+      throw new RpcException(error);
+    }
+    // return "Esta función regresa el producto" + id;
+  }
+
   @Get('name/:name')
   async findProductsByName(@Param('name') name:string){
     try {

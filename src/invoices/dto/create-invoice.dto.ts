@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsDate, IsNumber, IsOptional, IsPositive, ValidateNested } from "class-validator";
-import { CreateItemDto } from "src/orders2/dto";
+import { ArrayMinSize, IsArray, IsDate, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
+import { CreateItemDto } from "src/orders/dto";
 import { CreateOrderDto } from "./create-order.dto";
+import { CreateStoreInvoiceDto } from "./create-store-invoice.dto";
 
 export class CreateInvoiceDto {
     @Type( () => Date)
@@ -28,12 +29,15 @@ export class CreateInvoiceDto {
     @IsArray()
     @ArrayMinSize(1)
     @ValidateNested({each: true})
-    @Type( () => CreateItemDto)
-    items: CreateItemDto[]
+    @Type( () => CreateStoreInvoiceDto)
+    invoiceStores: CreateStoreInvoiceDto[];
 
     @IsArray()
     @ArrayMinSize(1)
     @ValidateNested({each: true})
     @Type( () => CreateOrderDto)
-    orders: CreateOrderDto[]
+    orders: CreateOrderDto[];
+
+    @IsString()
+    clientId: string;
 }

@@ -45,6 +45,24 @@ export class StocksController {
     }
   }
 
+  @Get('product/:id')
+  async findStocksByProductId(
+    @Param('id') id:string,
+    @Query() paginationDto : PaginationDto
+  ){
+    try {
+      const stocks = await firstValueFrom(
+        this.natsClient.send('find_stocks_by_productId', {id, ...paginationDto})
+      );
+
+      return stocks; 
+      
+    } catch (error) {
+      throw new RpcException(error);
+    }
+    // return "Esta función regresa el producto" + id;
+  }
+
   @Delete(':id')
     async deleteStock(@Param('id') id:string){
       try {

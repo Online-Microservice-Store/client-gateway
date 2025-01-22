@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { CreateCatalogDto, UpdateCatalogDto } from './dto';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { UpdateProductDto } from 'src/products/dto';
+import { AuthGuardAdmin } from 'src/auth/guards/authAdmin.guard';
 
 @Controller('catalogs')
 export class CatalogsController {
@@ -24,6 +25,7 @@ export class CatalogsController {
     }
   }
 
+  @UseGuards(AuthGuardAdmin)
   @Get()
   findAllCatalogs(@Query() paginationDto : PaginationDto){
     return this.natsClient.send('find_all_catalogs', paginationDto);
@@ -37,6 +39,23 @@ export class CatalogsController {
       );
 
       return catalog; 
+      
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
+  @Get('store/:id')
+  async getCatalogsByStoreId(
+    @Param('id') id: string,
+    @Query() paginationDto : PaginationDto
+  ){
+    try {
+      const catalogs = await firstValueFrom(
+        this.natsClient.send('get_catalogs_by_StoreId', {id, ...paginationDto})
+      );
+
+      return catalogs; 
       
     } catch (error) {
       throw new RpcException(error);

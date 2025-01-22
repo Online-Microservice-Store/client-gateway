@@ -1,7 +1,7 @@
 import { IsNumber, IsOptional, IsPositive, IsString, IsUUID } from "class-validator";
 
 export class CreateItemDto{
-    @IsUUID()
+    @IsString()
     productId: string;
     
     @IsNumber()
@@ -20,4 +20,5 @@ export class CreateItemDto{
 
     @IsString()
     stockId: string;
+
 }
