@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { ArrayMinSize, arrayMinSize, IsArray, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
+import { ArrayMinSize, arrayMinSize, IsArray, IsNumber, IsOptional, IsPositive, IsString, Min, ValidateNested } from "class-validator";
 import { CreateProductDto } from "./create-product.dto";
 
 export class CreateCatalogDto {
@@ -17,6 +17,7 @@ export class CreateCatalogDto {
 
     @IsNumber()
     @IsOptional()
+    @Min(0)
     productsAmount: number
 
   //Relations

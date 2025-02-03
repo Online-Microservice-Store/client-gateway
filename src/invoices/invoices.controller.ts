@@ -85,7 +85,7 @@ export class InvoicesController {
     @Query() paginationDto: PaginationDto) {
     try {
       const invoicesStore = await firstValueFrom(
-        this.client.send('find_invoicesStore_by_clientId', {id, ...paginationDto})
+        this.client.send('find_invoices_by_StoreId', {id, ...paginationDto})
       );
       return invoicesStore;
     } catch (error) {
