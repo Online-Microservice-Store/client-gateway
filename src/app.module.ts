@@ -9,8 +9,9 @@ import { StocksModule } from './stocks/stocks.module';
 import { StoresModule } from './stores/stores.module';
 import { SuscriptionsModule } from './suscriptions/suscriptions.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { HealthCheckModule } from './health-check/health-check.module';
 
 @Module({
-  imports: [ProductsModule, OrdersModule, NatsModule, AuthModule, OrdersModule, InvoicesModule, CatalogsModule, StocksModule, StoresModule, SuscriptionsModule, NotificationsModule]
+  imports: [ProductsModule, OrdersModule, NatsModule, AuthModule, OrdersModule, InvoicesModule, CatalogsModule, StocksModule, StoresModule, SuscriptionsModule, NotificationsModule, HealthCheckModule]
 })
 export class AppModule {}
