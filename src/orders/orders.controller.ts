@@ -1,32 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, ParseUUIDPipe } from '@nestjs/common';
-import { NATS_SERVICE, ORDER_SERVICE } from 'src/config';
+import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { PaginationDto } from 'src/common';
+import { NATS_SERVICE } from 'src/config';
 import { CreateOrderDto, OrderPaginationDto, StatusDto } from './dto';
+import { PaginationDto } from 'src/common';
 
 @Controller('orders')
 export class OrdersController {
   constructor(
-    @Inject(NATS_SERVICE) private readonly client: ClientProxy
+    @Inject(NATS_SERVICE) private readonly client:ClientProxy
   ) {}
 
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto) {
+  async createOrder(@Body() createOrderDto : CreateOrderDto){
+    console.log('dentro de orders ');
     try {
       const order = await firstValueFrom(
-       this.client.send('create_order', createOrderDto)
+        this.client.send('create_order', createOrderDto)
       );
       return order; 
-      
+          
     } catch (error) {
       throw new RpcException(error);
     }
   }
-
+  
   @Get()
   async findAllOrders(@Query() orderPaginationDto:OrderPaginationDto) {
-    
     try {
       const order = await firstValueFrom(
         this.client.send('find_all_orders', orderPaginationDto)
@@ -47,16 +47,44 @@ export class OrdersController {
           );
     
           return order; 
-          
+
         } catch (error) {
           throw new RpcException(error);
         }
   }
-  
+
+  @Get('/client/:id')
+  async findOrdersByUserId(
+    @Param('id') id:string,
+    @Query() paginationDto: PaginationDto) {
+    try {
+      const orders = await firstValueFrom(
+        this.client.send('find_orders_by_clientId', {id, ...paginationDto})
+      );
+      return orders
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
+  @Get('/store/:id')
+  async findOrdersByStoreId(
+    @Param('id') id:string,
+    @Query() paginationDto: PaginationDto) {
+    try {
+      const orders = await firstValueFrom(
+        this.client.send('find_orders_by_storeId', {id, ...paginationDto})
+      );
+      return orders
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
+
   @Get(':status')
   async findByStatus(
     @Param() statusDto: StatusDto,
-    @Query() paginationDto:PaginationDto,
+    @Query() paginationDto: PaginationDto,
   ) {
     try {
       const orders = await firstValueFrom(this.client.send('find_all_orders', {
@@ -70,7 +98,7 @@ export class OrdersController {
     }
   }
 
-  @Patch(':id')
+   @Patch(':id')
   async changeStatus(
     @Param('id', ParseUUIDPipe) id : string,
     @Body() statusDto: StatusDto
@@ -84,5 +112,6 @@ export class OrdersController {
       throw new RpcException(error);
     }
   }
+
 
 }
