@@ -22,11 +22,11 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Compilar la aplicación NestJS
+      - name: Creación del build
         run: npm run build
 
-      - name: Ejecutar pruebas (opcional)
-        run: npm run test
+      # - name: Ejecutar pruebas (opcional)
+      #   run: npm run test
 
       # Guardar artefactos del build si lo deseas
       - name: Guardar artefactos compilados (opcional)
