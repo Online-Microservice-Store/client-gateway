@@ -7,11 +7,13 @@ import { PaginationDto } from 'src/common';
 import { UpdateStoreTraderDto } from './dto/update-store-trader.dto';
 import { AuthGuardClient } from 'src/auth/guards/authClient.guard';
 import { AuthGuardTrader } from 'src/auth/guards/authTrader.guard';
+import { MetricsService } from 'src/metrics/metrics.service';
 
 @Controller('stores')
 export class StoresController {
   constructor(
-    @Inject(NATS_SERVICE) private readonly natsClient : ClientProxy
+    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy,
+    private readonly metricsService: MetricsService, // Inyectar MetricsService
   ) {}
 
   @Post()
@@ -29,6 +31,8 @@ export class StoresController {
 
  @Get()
   findAllStocks(@Query() paginationDto: PaginationDto){
+    this.metricsService.incrementRequestCounter('api/stores', 'GET', '200');
+
     return this.natsClient.send('find_all_stores', paginationDto);
   }
 

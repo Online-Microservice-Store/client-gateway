@@ -5,12 +5,14 @@ import { PaginationDto } from 'src/common';
 import { NATS_SERVICE } from 'src/config';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductDto } from './dto';
+import { MetricsService } from 'src/metrics/metrics.service';
 
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy
-  ) {}
+      @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy,
+      private readonly metricsService: MetricsService, // Inyectar MetricsService
+    ) {}
 
   @Post()
   async createProduct(@Body() createProductDto: CreateProductDto){
@@ -27,6 +29,7 @@ export class ProductsController {
 
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto){
+    this.metricsService.incrementRequestCounter('api/products', 'GET', '200');
     return this.natsClient.send({cmd: 'find_all_products'}, paginationDto);
   }
 
@@ -66,6 +69,8 @@ export class ProductsController {
   @Get('name/:name')
   async findProductsByName(@Param('name') name:string){
     try {
+      // this.metricsService.incrementRequestCounter('api/products/name/:name', 'GET', '200');
+
       const products = await firstValueFrom(
         this.natsClient.send({cmd: 'find_products_by_name'}, {name})
       );

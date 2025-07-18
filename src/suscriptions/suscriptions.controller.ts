@@ -4,11 +4,13 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { CreateSuscriptionDto, UpdateSuscriptionDto } from './dto';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
+import { MetricsService } from '../metrics/metrics.service';
 
 @Controller('suscriptions')
 export class SuscriptionsController {
   constructor(
-    @Inject(NATS_SERVICE) private readonly natsClient : ClientProxy 
+    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy,
+    private readonly metricsService: MetricsService, // Inyectar MetricsService
   ) {}
 
   @Post()
@@ -26,6 +28,8 @@ export class SuscriptionsController {
 
   @Get()
   findAllSuscription(@Query() paginationDto: PaginationDto){
+    this.metricsService.incrementRequestCounter('api/suscriptions', 'GET', '200');
+
     return this.natsClient.send('find_all_suscriptions', paginationDto);
   }
 

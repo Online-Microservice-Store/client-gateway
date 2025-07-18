@@ -10,8 +10,9 @@ import { StoresModule } from './stores/stores.module';
 import { SuscriptionsModule } from './suscriptions/suscriptions.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { HealthCheckModule } from './health-check/health-check.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
-  imports: [ProductsModule, OrdersModule, NatsModule, AuthModule, OrdersModule, InvoicesModule, CatalogsModule, StocksModule, StoresModule, SuscriptionsModule, NotificationsModule, HealthCheckModule]
+  imports: [ProductsModule, OrdersModule, NatsModule, AuthModule, OrdersModule, InvoicesModule, CatalogsModule, StocksModule, StoresModule, SuscriptionsModule, NotificationsModule, HealthCheckModule, MetricsModule]
 })
 export class AppModule {}

@@ -22,7 +22,7 @@ import { NATS_SERVICE } from 'src/config';
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
       if (!token) {
-        throw new UnauthorizedException('Token not found');
+        throw new UnauthorizedException('Token no encontrado');
       }
       try {
         const {user, token:newToken} =  await firstValueFrom(

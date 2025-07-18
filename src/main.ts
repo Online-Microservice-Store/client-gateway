@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { envs } from './config';
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { RpcCustomExceptionFilter } from './common';
+const client = require('prom-client');
+
 
 async function bootstrap() {
   const logger = new Logger('Main-Gateway');
@@ -15,8 +17,8 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api', {
     exclude: [{
-      path: '',
-      method: RequestMethod.GET,
+      path: 'metrics',
+      method: RequestMethod.ALL,
     }]
   });
   app.useGlobalPipes(
