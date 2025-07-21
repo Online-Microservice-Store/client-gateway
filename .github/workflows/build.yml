@@ -22,6 +22,13 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Escaneo de dependencias con Snyk (agente SSA)
+        uses: snyk/actions/node@v1
+        with:
+          command: test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
       - name: Creación del build
         run: npm run build
 
@@ -34,18 +41,3 @@ jobs:
         with:
           name: dist
           path: dist
-
-      - name: Generar SBOM con CycloneDX
-        run: |
-          npm install -g @cyclonedx/bom
-          cyclonedx-bom -o bom.xml
-
-      - name: Subir SBOM a Dependency-Track
-        run: |
-          curl --location "${{ secrets.DT_API_URL }}/api/v1/bom" \
-            --header "X-Api-Key: ${{ secrets.DT_API_KEY }}" \
-            --header "Content-Type: multipart/form-data" \
-            --form "autoCreate=true" \
-            --form "projectName=nestjs-backend" \
-            --form "projectVersion=1.0.0" \
-            --form "bom=@bom.xml"
